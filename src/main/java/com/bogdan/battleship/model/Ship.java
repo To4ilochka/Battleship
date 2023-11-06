@@ -2,9 +2,11 @@ package com.bogdan.battleship.model;
 
 import com.bogdan.battleship.util.ShipType;
 import com.bogdan.battleship.util.Vector;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 
 import java.util.LinkedList;
 import java.util.Objects;
@@ -22,6 +24,7 @@ public class Ship extends Group {
     private double newXPix, newYPix;
     private double oldXPix, oldYPix;
     private ShipPart activeShipPart;
+    private final Rotate rotate;
 
     public Ship(ShipType shipType, Vector vector, TileField currentField, int x, int y) {
         this.shipType = shipType;
@@ -35,6 +38,7 @@ public class Ship extends Group {
         this.oldYPix = y * TILE_SIZE;
         this.newXPix = oldXPix;
         this.newYPix = oldYPix;
+        this.rotate = new Rotate();
 
         for (int i = 0; i < shipType.getSize(); i++) {
             if (i == 0) {
@@ -50,6 +54,7 @@ public class Ship extends Group {
                 x++;
             }
         }
+        getTransforms().add(rotate);
     }
 
     public void move(int newXTale, int newYTale) {
@@ -88,12 +93,10 @@ public class Ship extends Group {
 
     public void turnOver(Vector newVector, double xPix, double yPix) {
         setNewVector(newVector);
-        Rotate rotate = new Rotate();
         rotate.setAngle(angleCalculation(newVector));
         rotate.setPivotX(xPix);
         rotate.setPivotY(yPix);
-        getTransforms().clear();
-        getTransforms().add(rotate);
+        getTransforms().set(getTransforms().indexOf(rotate), rotate);
     }
 
     public ShipType getShipType() {
