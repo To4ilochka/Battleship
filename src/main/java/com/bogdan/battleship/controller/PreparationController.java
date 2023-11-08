@@ -89,12 +89,18 @@ public class PreparationController extends SceneController {
                 }
                 ship.setActiveShipPart(null);
             }
+            if (e.getButton() == MouseButton.SECONDARY) {
+                if (ship.isFocused()) {
+                    ship.turnOver(ship.getNewDirection() == Direction.LEFT ? Direction.UP : Direction.LEFT);
+                    relocateMovingShip(ship, e);
+                }
+            }
         });
     }
 
     private void setOnMouseDragged(Ship ship) {
         ship.setOnMouseDragged(e -> {
-            if (e.getButton() == MouseButton.PRIMARY) {
+            if (e.isPrimaryButtonDown()) {
                 relocateMovingShip(ship, e);
             }
         });
@@ -117,12 +123,6 @@ public class PreparationController extends SceneController {
                     }
                 }
                 ship.getCurrentField().toFront();
-            }
-            if (e.getButton() == MouseButton.SECONDARY) {
-                if (ship.isFocused()) {
-                    ship.turnOver(ship.getNewDirection() == Direction.LEFT ? Direction.UP : Direction.LEFT);
-                    relocateMovingShip(ship, e);
-                }
             }
         });
     }
