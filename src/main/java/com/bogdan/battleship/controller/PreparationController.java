@@ -4,12 +4,15 @@ import com.bogdan.battleship.model.Ship;
 import com.bogdan.battleship.model.ShipPart;
 import com.bogdan.battleship.model.TileField;
 import com.bogdan.battleship.util.ShipType;
-import com.bogdan.battleship.util.Vector;
+import com.bogdan.battleship.util.Direction;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class PreparationController extends SceneController {
     public static final double TILE_SIZE = 32;
@@ -21,7 +24,7 @@ public class PreparationController extends SceneController {
     private AnchorPane anchorPane;
     private TileField mainTileField;
     private TileField smallTileField;
-    private LinkedList<TileField> tileFields;
+    private List<TileField> tileFields;
     private double mouseX, mouseY;
 
     public void initPreparationController() {
@@ -36,14 +39,14 @@ public class PreparationController extends SceneController {
     }
 
     private void initShips() {
-        initializeShip(mainTileField, ShipType.CRUISER, Vector.UP, 1, 1);
-        initializeShip(mainTileField, ShipType.CRUISER, Vector.LEFT, 2, 3);
-        initializeShip(mainTileField, ShipType.BOAT, Vector.UP, 4, 4);
-        initializeShip(smallTileField, ShipType.BATTLESHIP, Vector.UP, 0, 0);
+        initializeShip(mainTileField, ShipType.CRUISER, Direction.UP, 1, 1);
+        initializeShip(mainTileField, ShipType.CRUISER, Direction.LEFT, 2, 3);
+        initializeShip(mainTileField, ShipType.BOAT, Direction.UP, 4, 4);
+        initializeShip(smallTileField, ShipType.BATTLESHIP, Direction.UP, 0, 0);
     }
 
-    private void initializeShip(TileField tileField, ShipType shipType, Vector vector, int x, int y) {
-        Ship ship = new Ship(shipType, vector, tileField, x, y);
+    private void initializeShip(TileField tileField, ShipType shipType, Direction direction, int x, int y) {
+        Ship ship = new Ship(shipType, direction, tileField, x, y);
 
         tileField.getChildren().add(ship);
 
@@ -59,7 +62,7 @@ public class PreparationController extends SceneController {
             if (tileField.getBoard()[newX][newY].hasShipPart()) {
                 return false;
             }
-            if (ship.getNewVector() == Vector.UP) {
+            if (ship.getNewDirection() == Direction.UP) {
                 newY++;
             } else {
                 newX++;
@@ -86,33 +89,13 @@ public class PreparationController extends SceneController {
                 }
                 ship.setActiveShipPart(null);
             }
-            if (e.getButton() == MouseButton.SECONDARY) {
-                if (ship.isFocused()) {
-                    ship.turnOver(ship.getNewVector() == Vector.LEFT ? Vector.UP : Vector.LEFT,
-                            ship.getShip().getFirst().getLayoutX() + TILE_SIZE / 2,
-                            ship.getShip().getFirst().getLayoutY() + TILE_SIZE / 2
-                    );
-                }
-            }
         });
     }
 
     private void setOnMouseDragged(Ship ship) {
         ship.setOnMouseDragged(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                ship.toFront();
-                double differenceX = e.getSceneX() - mouseX + ship.getOldXPix();
-                double differenceY = e.getSceneY() - mouseY + ship.getOldYPix();
-                ship.setNewXPix(toBoard(differenceX + ship.getCurrentField().getLayoutX()) * TILE_SIZE - ship.getCurrentField().getLayoutX());
-                ship.setNewYPix(toBoard(differenceY + ship.getCurrentField().getLayoutY()) * TILE_SIZE - ship.getCurrentField().getLayoutY());
-                ship.setHoveredField(onField(ship, differenceX + ship.getCurrentField().getLayoutX(),
-                        differenceY + ship.getCurrentField().getLayoutY()));
-
-                if (ship.getHoveredField() == null) {
-                    ship.relocate(differenceX, differenceY);
-                } else {
-                    ship.relocate(ship.getNewXPix(), ship.getNewYPix());
-                }
+                relocateMovingShip(ship, e);
             }
         });
     }
@@ -126,17 +109,56 @@ public class PreparationController extends SceneController {
                 for (ShipPart shipPart : ship.getShip()) {
                     double x = e.getSceneX() - ship.getCurrentField().getLayoutX();
                     double y = e.getSceneY() - ship.getCurrentField().getLayoutY();
-                    double xShipPart = shipPart.getLayoutX() + ship.getLayoutX();
-                    double yShipPart = shipPart.getLayoutY() + ship.getLayoutY();
+                    double xShipPart = shipPart.getTaleX() * TILE_SIZE;
+                    double yShipPart = shipPart.getTaleY() * TILE_SIZE;
                     ship.getCurrentField().getBoard()[shipPart.getTaleX()][shipPart.getTaleY()].setShipPart(null);
                     if (isInRange(x, y, xShipPart, xShipPart + TILE_SIZE, yShipPart, yShipPart + TILE_SIZE)) {
                         ship.setActiveShipPart(shipPart);
-                        System.out.println(shipPart);
                     }
                 }
                 ship.getCurrentField().toFront();
             }
+            if (e.getButton() == MouseButton.SECONDARY) {
+                if (ship.isFocused()) {
+                    ship.turnOver(ship.getNewDirection() == Direction.LEFT ? Direction.UP : Direction.LEFT);
+                    relocateMovingShip(ship, e);
+                }
+            }
         });
+    }
+
+    private Point2D getShipPixBasedOnDirection(Ship ship, double presentMouseXPix, double presentMouseYPix) {
+        double newShipPositionX = calculateNewShipPosition(presentMouseXPix, mouseX, ship.getOldXPix());
+        double newShipPositionY = calculateNewShipPosition(presentMouseYPix, mouseY, ship.getOldYPix());
+        if (ship.getOldDirection() != ship.getNewDirection()) {
+            if (Direction.UP == ship.getNewDirection()) {
+                newShipPositionX += ship.getActiveShipPart().getTaleX() * TILE_SIZE - ship.getOldXPix();
+                newShipPositionY -= ship.getActiveShipPart().getIndex() * TILE_SIZE;
+            } else {
+                newShipPositionX -= ship.getActiveShipPart().getIndex() * TILE_SIZE;
+                newShipPositionY += ship.getActiveShipPart().getTaleY() * TILE_SIZE - ship.getOldYPix();
+            }
+        }
+        return new Point2D(newShipPositionX, newShipPositionY);
+    }
+
+    private double calculateNewShipPosition(double presentMousePix, double oldMousePix, double oldShipPix) {
+        return presentMousePix - oldMousePix + oldShipPix;
+    }
+
+    private void relocateMovingShip(Ship ship, MouseEvent e) {
+        ship.toFront();
+        Point2D newPoint = getShipPixBasedOnDirection(ship, e.getSceneX(), e.getSceneY());
+        ship.setNewTileXPix(toBoard(newPoint.getX() + ship.getCurrentField().getLayoutX()) * TILE_SIZE - ship.getCurrentField().getLayoutX());
+        ship.setNewTileYPix(toBoard(newPoint.getY() + ship.getCurrentField().getLayoutY()) * TILE_SIZE - ship.getCurrentField().getLayoutY());
+        ship.setHoveredField(onField(ship, newPoint.getX() + ship.getCurrentField().getLayoutX(),
+                newPoint.getY() + ship.getCurrentField().getLayoutY()));
+        if (ship.getHoveredField() == null) {
+            ship.relocate(newPoint.getX(), newPoint.getY());
+
+        } else {
+            ship.relocate(ship.getNewXPix(), ship.getNewYPix());
+        }
     }
 
     private void setShipActions(Ship ship) {
@@ -159,14 +181,14 @@ public class PreparationController extends SceneController {
             double fieldWidth = tileField.getWidth() * TILE_SIZE;
             double fieldHeight = tileField.getHeight() * TILE_SIZE;
 
-            if (ship.getNewVector() == Vector.LEFT) {
+            if (ship.getNewDirection() == Direction.LEFT) {
                 if (x >= fieldX && x + ship.getShipType().getSize() * TILE_SIZE <= fieldX + fieldWidth &&
                         y >= fieldY && y + TILE_SIZE <= fieldY + fieldHeight) {
                     return tileField;
                 }
             }
 
-            if (ship.getNewVector() == Vector.UP) {
+            if (ship.getNewDirection() == Direction.UP) {
                 if (x >= fieldX && x + TILE_SIZE <= fieldX + fieldWidth &&
                         y >= fieldY && y + ship.getShipType().getSize() * TILE_SIZE <= fieldY + fieldHeight) {
                     return tileField;
