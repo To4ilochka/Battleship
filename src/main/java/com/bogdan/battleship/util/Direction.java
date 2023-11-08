@@ -1,11 +1,11 @@
 package com.bogdan.battleship.util;
 
-public enum Vector {
+public enum Direction {
     UP(0), LEFT(270);
 
     private final double angle;
 
-    Vector(double angle) {
+    Direction(double angle) {
         this.angle = angle;
     }
 
