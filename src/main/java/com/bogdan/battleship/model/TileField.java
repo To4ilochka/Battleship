@@ -1,14 +1,15 @@
 package com.bogdan.battleship.model;
 
 import javafx.scene.Group;
-import javafx.scene.layout.Pane;
 
 public class TileField extends Group {
     private Tile[][] board;
     private final int height;
     private final int width;
+    private final boolean isAllowProximityShips;
 
-    public TileField(int x, int y, int height, int width) {
+    public TileField(int x, int y, int height, int width, boolean isAllowProximityShips) {
+        this.isAllowProximityShips = isAllowProximityShips;
         this.height = height;
         this.width = width;
         relocate(x, y);
@@ -36,5 +37,9 @@ public class TileField extends Group {
 
     public int getWidth() {
         return width;
+    }
+
+    public boolean isAllowProximityShips() {
+        return isAllowProximityShips;
     }
 }

@@ -1,7 +1,7 @@
 package com.bogdan.battleship.util;
 
 public enum ShipType {
-    BOAT(1), DESTROYER(2), BATTLESHIP(3), CRUISER(4);
+    BOAT(1), DESTROYER(2), CRUISER(3), BATTLESHIP(4);
     private final int size;
 
     ShipType(int size) {

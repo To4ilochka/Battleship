@@ -28,8 +28,8 @@ public class PreparationController extends SceneController {
     private double mouseX, mouseY;
 
     public void initPreparationController() {
-        this.mainTileField = new TileField(352, 64, MAIN_FIELD_HEIGHT, MAIN_FIELD_WIDTH);
-        this.smallTileField = new TileField(64, 224, SMALL_FIELD_HEIGHT, SMALL_FIELD_WIDTH);
+        this.mainTileField = new TileField(352, 64, MAIN_FIELD_HEIGHT, MAIN_FIELD_WIDTH, false);
+        this.smallTileField = new TileField(64, 224, SMALL_FIELD_HEIGHT, SMALL_FIELD_WIDTH, true);
         tileFields = new LinkedList<>();
         tileFields.add(mainTileField);
         tileFields.add(smallTileField);
@@ -39,10 +39,16 @@ public class PreparationController extends SceneController {
     }
 
     private void initShips() {
-        initializeShip(mainTileField, ShipType.CRUISER, Direction.UP, 1, 1);
-        initializeShip(mainTileField, ShipType.CRUISER, Direction.LEFT, 2, 3);
-        initializeShip(mainTileField, ShipType.BOAT, Direction.UP, 4, 4);
-        initializeShip(smallTileField, ShipType.BATTLESHIP, Direction.UP, 0, 0);
+        initializeShip(smallTileField, ShipType.BOAT, Direction.UP, 2, 0);
+        initializeShip(smallTileField, ShipType.BOAT, Direction.UP, 3, 0);
+        initializeShip(smallTileField, ShipType.BOAT, Direction.UP, 4, 0);
+        initializeShip(smallTileField, ShipType.BOAT, Direction.UP, 5, 0);
+        initializeShip(smallTileField, ShipType.DESTROYER, Direction.LEFT, 3, 1);
+        initializeShip(smallTileField, ShipType.DESTROYER, Direction.LEFT, 2, 2);
+        initializeShip(smallTileField, ShipType.DESTROYER, Direction.LEFT, 4, 2);
+        initializeShip(smallTileField, ShipType.CRUISER, Direction.LEFT, 1, 3);
+        initializeShip(smallTileField, ShipType.CRUISER, Direction.LEFT, 4, 3);
+        initializeShip(smallTileField, ShipType.BATTLESHIP, Direction.LEFT, 2, 4);
     }
 
     private void initializeShip(TileField tileField, ShipType shipType, Direction direction, int x, int y) {
@@ -56,10 +62,7 @@ public class PreparationController extends SceneController {
     private boolean tryMove(Ship ship, int newX, int newY) {
         TileField tileField = ship.getHoveredField();
         for (int i = 1; i <= ship.getShipType().getSize(); i++) {
-            if (newX >= tileField.getWidth() || newY >= tileField.getHeight()) {
-                return false;
-            }
-            if (tileField.getBoard()[newX][newY].hasShipPart()) {
+            if (tileField.getBoard()[newX][newY].isBusy()) {
                 return false;
             }
             if (ship.getNewDirection() == Direction.UP) {
@@ -84,6 +87,9 @@ public class PreparationController extends SceneController {
 
                 if (tryMove(ship, newXTale, newYTale)) {
                     ship.move(newXTale, newYTale);
+                    if (!ship.getCurrentField().isAllowProximityShips()) {
+                        ship.processSurroundingTiles(ship);
+                    }
                 } else {
                     ship.abortMove();
                 }
@@ -120,6 +126,9 @@ public class PreparationController extends SceneController {
                     ship.getCurrentField().getBoard()[shipPart.getTaleX()][shipPart.getTaleY()].setShipPart(null);
                     if (isInRange(x, y, xShipPart, xShipPart + TILE_SIZE, yShipPart, yShipPart + TILE_SIZE)) {
                         ship.setActiveShipPart(shipPart);
+                    }
+                    if (!ship.getCurrentField().isAllowProximityShips()) {
+                        ship.processSurroundingTiles(null);
                     }
                 }
                 ship.getCurrentField().toFront();
