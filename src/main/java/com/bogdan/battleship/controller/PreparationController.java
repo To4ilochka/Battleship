@@ -79,6 +79,7 @@ public class PreparationController extends SceneController {
             if (e.getButton() == MouseButton.PRIMARY) {
                 anchorPane.requestFocus();
                 if (ship.getHoveredField() == null) {
+                    hideAllVisual();
                     ship.abortMove();
                     return;
                 }
@@ -95,12 +96,7 @@ public class PreparationController extends SceneController {
                     ship.abortMove();
                 }
                 ship.setActiveShipPart(null);
-                tileFields.stream()
-                        .filter(TileField::isNotAllowProximityShips)
-                        .forEach(TileField::hideBusyTiles);
-                tileFields.stream()
-                        .flatMap(tileField -> tileField.getShips().stream())
-                        .forEach(Ship::setDefault);
+                hideAllVisual();
             }
             if (e.getButton() == MouseButton.SECONDARY) {
                 if (ship.isFocused()) {
@@ -137,17 +133,30 @@ public class PreparationController extends SceneController {
                     if (ship.getCurrentField().isNotAllowProximityShips()) {
                         ship.processSurroundingTiles(null);
                     }
-                    tileFields.stream()
-                            .filter(TileField::isNotAllowProximityShips)
-                            .forEach(TileField::showBusyTiles);
-                    tileFields.stream()
-                            .flatMap(tileField -> tileField.getShips().stream())
-                            .filter(s -> s != ship)
-                            .forEach(Ship::setRed);
+                    showAllVisual(ship);
                 }
                 ship.getCurrentField().toFront();
             }
         });
+    }
+
+    private void showAllVisual(Ship currentShip) {
+        tileFields.stream()
+                .filter(TileField::isNotAllowProximityShips)
+                .forEach(TileField::showBusyTiles);
+        tileFields.stream()
+                .flatMap(tileField -> tileField.getShips().stream())
+                .filter(s -> s != currentShip)
+                .forEach(Ship::setRed);
+    }
+
+    private void hideAllVisual() {
+        tileFields.stream()
+                .filter(TileField::isNotAllowProximityShips)
+                .forEach(TileField::hideBusyTiles);
+        tileFields.stream()
+                .flatMap(tileField -> tileField.getShips().stream())
+                .forEach(Ship::setDefault);
     }
 
     private Point2D getShipPixBasedOnDirection(Ship ship, double presentMouseXPix, double presentMouseYPix) {
