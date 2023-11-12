@@ -88,7 +88,9 @@ public class Ship extends Group {
             turnOver(getOldDirection());
         }
         setHoveredField(getCurrentField());
-
+        if (currentField.isNotAllowProximityShips()) {
+            processSurroundingTiles(this);
+        }
     }
 
     public void turnOver(Direction newDirection) {
