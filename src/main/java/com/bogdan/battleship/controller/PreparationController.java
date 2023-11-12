@@ -3,8 +3,8 @@ package com.bogdan.battleship.controller;
 import com.bogdan.battleship.model.Ship;
 import com.bogdan.battleship.model.ShipPart;
 import com.bogdan.battleship.model.TileField;
-import com.bogdan.battleship.util.ShipType;
 import com.bogdan.battleship.util.Direction;
+import com.bogdan.battleship.util.ShipType;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
@@ -82,18 +82,25 @@ public class PreparationController extends SceneController {
                     ship.abortMove();
                     return;
                 }
+                relocateMovingShip(ship, e);
                 int newXTale = toBoard(ship.getNewXPix() + ship.getCurrentField().getLayoutX()) - toBoard(ship.getHoveredField().getLayoutX());
                 int newYTale = toBoard(ship.getNewYPix() + ship.getCurrentField().getLayoutY()) - toBoard(ship.getHoveredField().getLayoutY());
 
                 if (tryMove(ship, newXTale, newYTale)) {
                     ship.move(newXTale, newYTale);
-                    if (!ship.getCurrentField().isAllowProximityShips()) {
+                    if (ship.getCurrentField().isNotAllowProximityShips()) {
                         ship.processSurroundingTiles(ship);
                     }
                 } else {
                     ship.abortMove();
                 }
                 ship.setActiveShipPart(null);
+                tileFields.stream()
+                        .filter(TileField::isNotAllowProximityShips)
+                        .forEach(TileField::hideBusyTiles);
+                tileFields.stream()
+                        .flatMap(tileField -> tileField.getShips().stream())
+                        .forEach(Ship::setDefault);
             }
             if (e.getButton() == MouseButton.SECONDARY) {
                 if (ship.isFocused()) {
@@ -127,9 +134,16 @@ public class PreparationController extends SceneController {
                     if (isInRange(x, y, xShipPart, xShipPart + TILE_SIZE, yShipPart, yShipPart + TILE_SIZE)) {
                         ship.setActiveShipPart(shipPart);
                     }
-                    if (!ship.getCurrentField().isAllowProximityShips()) {
+                    if (ship.getCurrentField().isNotAllowProximityShips()) {
                         ship.processSurroundingTiles(null);
                     }
+                    tileFields.stream()
+                            .filter(TileField::isNotAllowProximityShips)
+                            .forEach(TileField::showBusyTiles);
+                    tileFields.stream()
+                            .flatMap(tileField -> tileField.getShips().stream())
+                            .filter(s -> s != ship)
+                            .forEach(Ship::setRed);
                 }
                 ship.getCurrentField().toFront();
             }

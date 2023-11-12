@@ -28,11 +28,23 @@ public class Tile extends Rectangle {
     }
 
     public boolean isBusy() {
-        return hasShipPart() || !nearShips.isEmpty();
+        return hasShipPart() || hasNearShips();
     }
 
     public boolean hasShipPart() {
         return shipPart != null;
+    }
+
+    public void paintBoardOrange() {
+        setFill(Color.valueOf("#3b091b"));
+    }
+
+    public void paintBoardDefault() {
+        setFill(null);
+    }
+
+    public boolean hasNearShips() {
+        return !getNearShips().isEmpty();
     }
 
     public LinkedList<Ship> getNearShips() {

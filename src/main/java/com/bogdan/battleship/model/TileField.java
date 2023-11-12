@@ -2,6 +2,10 @@ package com.bogdan.battleship.model;
 
 import javafx.scene.Group;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class TileField extends Group {
     private Tile[][] board;
     private final int height;
@@ -39,7 +43,28 @@ public class TileField extends Group {
         return width;
     }
 
-    public boolean isAllowProximityShips() {
-        return isAllowProximityShips;
+    public boolean isNotAllowProximityShips() {
+        return !isAllowProximityShips;
+    }
+
+    public void showBusyTiles() {
+        Arrays.stream(board)
+                .flatMap(Arrays::stream)
+                .filter(Tile::hasNearShips)
+                .forEach(Tile::paintBoardOrange);
+    }
+
+    public void hideBusyTiles() {
+        Arrays.stream(board)
+                .flatMap(Arrays::stream)
+                .filter(Tile::hasNearShips)
+                .forEach(Tile::paintBoardDefault);
+    }
+
+    public List<Ship> getShips() {
+        return getChildren().stream()
+                .filter(node -> node instanceof Ship)
+                .map(node -> (Ship) node)
+                .collect(Collectors.toList());
     }
 }

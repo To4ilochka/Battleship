@@ -54,7 +54,7 @@ public class Ship extends Group {
         this.rotate = new Rotate(0, ship.getFirst().getLayoutX() + TILE_SIZE / 2,
                 ship.getFirst().getLayoutY() + TILE_SIZE / 2);
         getTransforms().add(rotate);
-        if (!getCurrentField().isAllowProximityShips()) {
+        if (getCurrentField().isNotAllowProximityShips()) {
             processSurroundingTiles(this);
         }
     }
@@ -123,6 +123,14 @@ public class Ship extends Group {
         }
         processNearHeadTiles(setNearShip);
         processNearTailTiles(setNearShip);
+    }
+
+    public void setRed() {
+        getShip().forEach(ShipPart::setRed);
+    }
+
+    public void setDefault() {
+        getShip().forEach(ShipPart::setDefault);
     }
 
     public ShipType getShipType() {
