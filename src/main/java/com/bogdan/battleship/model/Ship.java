@@ -1,7 +1,7 @@
 package com.bogdan.battleship.model;
 
-import com.bogdan.battleship.util.ShipType;
 import com.bogdan.battleship.util.Direction;
+import com.bogdan.battleship.util.ShipType;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Rotate;
@@ -103,21 +103,21 @@ public class Ship extends Group {
             int taleY = shipPart.getTaleY();
             if (Direction.LEFT == getOldDirection()) {
                 if (taleY == 0) {
-                    calculateTakeTiles(setNearShip, taleX, taleY + 1);
+                    updateNearShips(setNearShip, taleX, taleY + 1);
                 } else if (taleY == currentField.getHeight() - 1) {
-                    calculateTakeTiles(setNearShip, taleX, taleY - 1);
+                    updateNearShips(setNearShip, taleX, taleY - 1);
                 } else {
-                    calculateTakeTiles(setNearShip, taleX, taleY + 1);
-                    calculateTakeTiles(setNearShip, taleX, taleY - 1);
+                    updateNearShips(setNearShip, taleX, taleY + 1);
+                    updateNearShips(setNearShip, taleX, taleY - 1);
                 }
             } else {
                 if (taleX == 0) {
-                    calculateTakeTiles(setNearShip, taleX + 1, taleY);
+                    updateNearShips(setNearShip, taleX + 1, taleY);
                 } else if (taleX == currentField.getWidth() - 1) {
-                    calculateTakeTiles(setNearShip, taleX - 1, taleY);
+                    updateNearShips(setNearShip, taleX - 1, taleY);
                 } else {
-                    calculateTakeTiles(setNearShip, taleX + 1, taleY);
-                    calculateTakeTiles(setNearShip, taleX - 1, taleY);
+                    updateNearShips(setNearShip, taleX + 1, taleY);
+                    updateNearShips(setNearShip, taleX - 1, taleY);
                 }
             }
         }
@@ -221,7 +221,7 @@ public class Ship extends Group {
         return 0;
     }
 
-    private void calculateTakeTiles(Ship nearShip, int taleX, int taleY) {
+    private void updateNearShips(Ship nearShip, int taleX, int taleY) {
         if (nearShip != null) {
             currentField.getBoard()[taleX][taleY].getNearShips().add(nearShip);
         } else {
@@ -239,23 +239,23 @@ public class Ship extends Group {
                 return;
             }
             if (head.getTaleY() != 0) {
-                calculateTakeTiles(setNearShip, head.getTaleX() - 1, head.getTaleY() - 1);
+                updateNearShips(setNearShip, head.getTaleX() - 1, head.getTaleY() - 1);
             }
             if (head.getTaleY() != currentField.getHeight() - 1) {
-                calculateTakeTiles(setNearShip, head.getTaleX() - 1, head.getTaleY() + 1);
+                updateNearShips(setNearShip, head.getTaleX() - 1, head.getTaleY() + 1);
             }
-            calculateTakeTiles(setNearShip, head.getTaleX() - 1, head.getTaleY());
+            updateNearShips(setNearShip, head.getTaleX() - 1, head.getTaleY());
         } else {
             if (head.getTaleY() == 0) {
                 return;
             }
             if (head.getTaleX() != 0) {
-                calculateTakeTiles(setNearShip, head.getTaleX() - 1, head.getTaleY() - 1);
+                updateNearShips(setNearShip, head.getTaleX() - 1, head.getTaleY() - 1);
             }
             if (head.getTaleX() != currentField.getWidth() - 1) {
-                calculateTakeTiles(setNearShip, head.getTaleX() + 1, head.getTaleY() - 1);
+                updateNearShips(setNearShip, head.getTaleX() + 1, head.getTaleY() - 1);
             }
-            calculateTakeTiles(setNearShip, head.getTaleX(), head.getTaleY() - 1);
+            updateNearShips(setNearShip, head.getTaleX(), head.getTaleY() - 1);
         }
     }
 
@@ -271,23 +271,23 @@ public class Ship extends Group {
                 return;
             }
             if (tail.getTaleY() != 0) {
-                calculateTakeTiles(setNearShip, tail.getTaleX() + 1, tail.getTaleY() - 1);
+                updateNearShips(setNearShip, tail.getTaleX() + 1, tail.getTaleY() - 1);
             }
             if (tail.getTaleY() != lastTaleY) {
-                calculateTakeTiles(setNearShip, tail.getTaleX() + 1, tail.getTaleY() + 1);
+                updateNearShips(setNearShip, tail.getTaleX() + 1, tail.getTaleY() + 1);
             }
-            calculateTakeTiles(setNearShip, tail.getTaleX() + 1, tail.getTaleY());
+            updateNearShips(setNearShip, tail.getTaleX() + 1, tail.getTaleY());
         } else {
             if (tail.getTaleY() == lastTaleY) {
                 return;
             }
             if (tail.getTaleX() != 0) {
-                calculateTakeTiles(setNearShip, tail.getTaleX() - 1, tail.getTaleY() + 1);
+                updateNearShips(setNearShip, tail.getTaleX() - 1, tail.getTaleY() + 1);
             }
             if (tail.getTaleX() != lastTaleX) {
-                calculateTakeTiles(setNearShip, tail.getTaleX() + 1, tail.getTaleY() + 1);
+                updateNearShips(setNearShip, tail.getTaleX() + 1, tail.getTaleY() + 1);
             }
-            calculateTakeTiles(setNearShip, tail.getTaleX(), tail.getTaleY() + 1);
+            updateNearShips(setNearShip, tail.getTaleX(), tail.getTaleY() + 1);
         }
     }
 
