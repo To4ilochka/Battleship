@@ -2,10 +2,12 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bogdan.battleship.controller.PreparationController">
+<AnchorPane fx:id="anchorPane" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bogdan.battleship.controller.PreparationController">
    <children>
       <Label focusTraversable="false" layoutX="330.0" layoutY="64.0" text="1" textFill="#990066">
          <font>
@@ -172,6 +174,32 @@
             <Font size="22.0" />
          </font>
       </Label>
-      <Button fx:id="back" focusTraversable="false" layoutX="332.0" layoutY="441.0" mnemonicParsing="false" onAction="#switchToMenu" text="Back" />
+      <Button fx:id="back" focusTraversable="false" layoutY="444.0" mnemonicParsing="false" onAction="#switchToMenu" style="-fx-background-color: black;" text="Back" textFill="#5100ff">
+         <font>
+            <Font size="16.0" />
+         </font></Button>
+      <Button fx:id="ready" focusTraversable="false" layoutX="611.0" layoutY="427.0" mnemonicParsing="false" style="-fx-background-color: black;" text="Ready!" textFill="#990066">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Button>
+      <Label layoutX="86.0" layoutY="16.0" prefHeight="32.0" prefWidth="185.0" text="Press and drag ships" textFill="#5100ff">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="19.0" layoutY="48.0" prefHeight="32.0" prefWidth="321.0" text="from the small field to the large one" textFill="#5100ff">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="leftClickImage" fitHeight="30.0" fitWidth="24.0" layoutX="166.0" layoutY="81.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="96.0" layoutY="113.0" prefHeight="30.0" prefWidth="166.0" text="You can turn ships" textFill="#5100ff">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="rightClickImage" fitHeight="30.0" fitWidth="24.0" layoutX="167.0" layoutY="145.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="save" fitHeight="52.0" fitWidth="55.0" layoutX="321.0" layoutY="427.0" />
    </children>
 </AnchorPane>

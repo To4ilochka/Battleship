@@ -1,4 +1,4 @@
-package com.bogdan.battleship.util;
+package com.bogdan.battleship.constant;
 
 public enum Direction {
     UP(0), LEFT(270);

@@ -1,18 +1,21 @@
 package com.bogdan.battleship.controller;
 
+import com.bogdan.battleship.constant.Direction;
+import com.bogdan.battleship.constant.ShipType;
 import com.bogdan.battleship.model.Ship;
 import com.bogdan.battleship.model.ShipPart;
 import com.bogdan.battleship.model.TileField;
-import com.bogdan.battleship.util.Direction;
-import com.bogdan.battleship.util.ShipType;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class PreparationController extends SceneController {
     public static final double TILE_SIZE = 32;
@@ -22,6 +25,12 @@ public class PreparationController extends SceneController {
     public static final int SMALL_FIELD_HEIGHT = 5;
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private ImageView leftClickImage;
+    @FXML
+    private ImageView rightClickImage;
+    @FXML
+    private ImageView save;
     private TileField mainTileField;
     private TileField smallTileField;
     private List<TileField> tileFields;
@@ -35,7 +44,15 @@ public class PreparationController extends SceneController {
         tileFields.add(smallTileField);
         anchorPane.getChildren().add(mainTileField);
         anchorPane.getChildren().add(smallTileField);
+        initImages();
         initShips();
+    }
+
+    private void initImages() {
+        leftClickImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/mouse/left-click.png"))));
+        rightClickImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/mouse/right-click.png"))));
+        save.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/save/save-image.png"))));
+
     }
 
     private void initShips() {
