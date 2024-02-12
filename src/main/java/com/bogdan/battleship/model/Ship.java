@@ -1,7 +1,7 @@
 package com.bogdan.battleship.model;
 
-import com.bogdan.battleship.util.Direction;
-import com.bogdan.battleship.util.ShipType;
+import com.bogdan.battleship.constant.Direction;
+import com.bogdan.battleship.constant.ShipType;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Rotate;
