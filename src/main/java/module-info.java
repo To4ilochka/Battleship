@@ -1,6 +1,7 @@
 module com.bogdan.battleship {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
     requires java.desktop;
 
 

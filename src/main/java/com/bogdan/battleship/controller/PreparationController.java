@@ -6,18 +6,24 @@ import com.bogdan.battleship.model.Ship;
 import com.bogdan.battleship.model.ShipPart;
 import com.bogdan.battleship.model.TileField;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class PreparationController extends SceneController {
+public class PreparationController extends SceneController implements Initializable {
     public static final double TILE_SIZE = 32;
     public static final int MAIN_FIELD_WIDTH = 10;
     public static final int MAIN_FIELD_HEIGHT = 10;
@@ -31,12 +37,14 @@ public class PreparationController extends SceneController {
     private ImageView rightClickImage;
     @FXML
     private ImageView save;
+    private MediaPlayer mediaPlayer;
     private TileField mainTileField;
     private TileField smallTileField;
     private List<TileField> tileFields;
     private double mouseX, mouseY;
 
-    public void initPreparationController() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         this.mainTileField = new TileField(352, 64, MAIN_FIELD_HEIGHT, MAIN_FIELD_WIDTH, false);
         this.smallTileField = new TileField(64, 224, SMALL_FIELD_HEIGHT, SMALL_FIELD_WIDTH, true);
         tileFields = new LinkedList<>();
@@ -46,13 +54,38 @@ public class PreparationController extends SceneController {
         anchorPane.getChildren().add(smallTileField);
         initImages();
         initShips();
+        initSounds();
+    }
+
+    @FXML
+    public void openSavesPane(MouseEvent e) {
+        if (e.getButton() == MouseButton.PRIMARY) {
+            //todo openSavesPane
+        }
     }
 
     private void initImages() {
         leftClickImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/mouse/left-click.png"))));
         rightClickImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/mouse/right-click.png"))));
         save.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/bogdan/battleship/image/preparation/save/save-image.png"))));
+    }
 
+    private void initSounds() {
+        leftClickImage.setOnMouseClicked(e -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.seek(mediaPlayer.getStartTime());
+            } else {
+                try {
+                    mediaPlayer = new MediaPlayer(
+                            new Media(Objects.requireNonNull(
+                                    getClass().getResource("/com/bogdan/battleship/sound/fart-sound.mp3")
+                            ).toURI().toString()));
+                } catch (URISyntaxException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            mediaPlayer.play();
+        });
     }
 
     private void initShips() {

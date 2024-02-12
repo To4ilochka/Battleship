@@ -55,11 +55,6 @@ public class SceneController {
                 "/com/bogdan/battleship/fxml/preparation.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(loader.load());
-
-        PreparationController preparationController = loader.getController();
-        preparationController.initPreparationController();
-
-
         stage.setScene(scene);
         stage.show();
     }
